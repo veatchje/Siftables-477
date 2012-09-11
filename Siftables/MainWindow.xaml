@@ -1,0 +1,104 @@
+﻿<UserControl xmlns:Sift="clr-namespace:Siftables" 
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    x:Class="Siftables.MainWindowView"
+    xmlns:vm="clr-namespace:Siftables.ViewModel"
+    xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.SL5" 
+    xmlns:behave="clr-namespace:Siftables.Behaviors" mc:Ignorable="d"
+    d:DesignHeight="600" d:DesignWidth="900">
+
+    <UserControl.Resources>
+        <vm:MainWindowViewModel x:Key="MainWindowViewModel"></vm:MainWindowViewModel>
+
+        <Storyboard x:Name="sbScale">
+            <DoubleAnimation x:Name="aniScaleX" Storyboard.TargetName="workspace"
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0" Duration="0:0:0.2"/>
+            <DoubleAnimation x:Name="aniScaleY" Storyboard.TargetName="workspace"
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0" Duration="0:0:0.2"/>
+            <DoubleAnimation x:Name="aniCenterX" Storyboard.TargetName="workspace"
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.CenterX)" To="0" Duration="0:0:0.2"/>
+            <DoubleAnimation x:Name="aniCenterY" Storyboard.TargetName="workspace"
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.CenterY)" To="0" Duration="0:0:0.2"/>
+        </Storyboard>
+        <ScaleTransform x:Name="zoomTransform" ScaleX="1" ScaleY="1"></ScaleTransform>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" Background="White" DataContext="{Binding Source={StaticResource MainWindowViewModel}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0" />
+            <RowDefinition />
+            <RowDefinition Height="45" />
+            <RowDefinition Height="25" />
+        </Grid.RowDefinitions>
+        <!--Row 0-->
+        <ItemsControl ItemsSource="{Binding Path=ActiveSounds}" x:Name="sounds">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <MediaElement Source="{Binding Path, Mode=TwoWay}" AutoPlay="True" Volume="{Binding VolumeLeft, Mode=TwoWay}"  Position="{Binding Position, Mode=TwoWay}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MediaOpened">
+                                <cmd:EventToCommand Command="{Binding Path=SetPosition}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </MediaElement>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <!--Row 1-->
+        <!--<Border x:Name="workspaceBorder" BorderBrush="Black" BorderThickness="3" Margin="5" Grid.Row="1" behave:ClipBehavior.ToBounds="True">-->
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Path=CubeViewModels}" Margin="0" x:Name="workspace" behave:ClipBehavior.ToBounds="True" MouseWheel="WorkspaceMouseWheel" RenderTransform="{StaticResource zoomTransform}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas Background="SkyBlue" Margin="0" x:Name="workspaceBackground">
+                    </Canvas>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Canvas>
+                        <Sift:CubeView DataContext="{Binding}" Canvas.Left="{Binding PositionX, Mode=TwoWay}" Canvas.Top="{Binding PositionY, Mode=TwoWay}"></Sift:CubeView>
+                    </Canvas>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <!--</Border>-->
+
+        <!--Row 2-->
+        <Grid x:Name="controlsGrid" Background="Gray" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="1.5*" />
+                <ColumnDefinition Width="1.5*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="snapToGridButton" Margin="10" Grid.Column="0" Command="{Binding SnapToGridCommand, Mode=OneWay}">
+                <sdk:Label Content="Snap To Grid"/>
+            </Button>
+            <Button x:Name="loadAProgramButton" Margin="10" Grid.Column="1" Command="{Binding LoadAFileCommand, Mode=TwoWay}">
+                <sdk:Label Content="Load A Program"/>
+            </Button>
+            <Button x:Name="pauseOrResume" Margin="10" Grid.Column="2" Command="{Binding PauseOrResumeCommand, Mode=OneWay}" IsEnabled="{Binding CanPauseOrResume}">
+                <sdk:Label Content="{Binding PauseOrResumeText, Mode=TwoWay}"/>
+            </Button>
+
+            <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch">
+                <sdk:Label Margin="2" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White"># of Cubes:</sdk:Label>
+                <toolkit:NumericUpDown x:Name="numberOfCubesUpDown" IsEnabled="True" Maximum="9" Minimum="1" Style="{StaticResource ButtonSpinnerHorizontalStyle}" Value="{Binding Path=CubeViewModels.Count, Mode=TwoWay}" Height="30" FontSize="14">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="ValueChanged">
+                            <cmd:EventToCommand Command="{Binding ChangeNumberOfCubesCommand}" PassEventArgsToCommand="True"></cmd:EventToCommand>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </toolkit:NumericUpDown>
+            </StackPanel>
+        </Grid>
+
+        <!--Row 3-->
+        <sdk:Label x:Name="status" Padding="15,0" Background="LightGray" BorderThickness="0,3,0,0" BorderBrush="Black" FontSize="12" Grid.Row="3" Content="{Binding Status}"/>
+    </Grid>
+</UserControl>
