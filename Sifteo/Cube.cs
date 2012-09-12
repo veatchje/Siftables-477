@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace Sifteo
 {
     public class BackgroundEventArgs : EventArgs
@@ -118,6 +119,7 @@ namespace Sifteo
             }
 
             NotifyRotateCCW(this, Orientation);
+         
         }
 
         public void OnButtonPress()

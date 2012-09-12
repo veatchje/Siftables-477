@@ -12,6 +12,17 @@ namespace Siftables.ViewModel
     {
         public const int NumInitialCubes = 6;
         public const String ReadyStatus = "Ready";
+        private String _bgColor = "SkyBlue";
+        public String BgColor
+        {
+            get { return _bgColor; }
+
+            set
+            {
+                _bgColor = value;
+                NotifyPropertyChanged("BgColor");
+            }
+        }
 
         public ObservableCollection<CubeViewModel> CubeViewModels { get; private set; }
         public ObservableCollection<SoundViewModel> ActiveSounds { get; private set; }
@@ -20,6 +31,7 @@ namespace Siftables.ViewModel
         public RelayCommand SnapToGridCommand { get; private set; }
         public RelayCommand LoadAFileCommand { get; private set; }
         public RelayCommand PauseOrResumeCommand { get; private set; }
+        public RelayCommand ChangeBackgroundCommand { get; private set; }
         public RelayCommand<EventArgs> ChangeNumberOfCubesCommand { get; private set; }
 
         private String _status;
@@ -193,6 +205,24 @@ namespace Siftables.ViewModel
                 NotifyPropertyChanged("PauseOrResumeText");
             });
             #endregion
+            #region ChangeBackgroundCommand
+            ChangeBackgroundCommand = new RelayCommand(() =>
+            {
+                Status = "Changing Background";
+                if (BgColor == "SkyBlue")
+                {
+                    BgColor = "Red";
+                }
+                else
+                {
+                    BgColor = "SkyBlue";
+                }
+                
+
+                Status = ReadyStatus;
+            });
+            #endregion
+
 
             AppRunner = AppRunner.GetInstance();
 

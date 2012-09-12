@@ -54,7 +54,7 @@
         <ItemsControl Grid.Row="1" ItemsSource="{Binding Path=CubeViewModels}" Margin="0" x:Name="workspace" behave:ClipBehavior.ToBounds="True" MouseWheel="WorkspaceMouseWheel" RenderTransform="{StaticResource zoomTransform}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas Background="SkyBlue" Margin="0" x:Name="workspaceBackground">
+                    <Canvas Background="{Binding Path=BgColor}" Margin="0" x:Name="workspaceBackground">
                     </Canvas>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -71,10 +71,11 @@
         <!--Row 2-->
         <Grid x:Name="controlsGrid" Background="Gray" Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="1.5*" />
-                <ColumnDefinition Width="1.5*" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="99*" />
+                <ColumnDefinition Width="115*" />
+                <ColumnDefinition Width="71*" />
+                <ColumnDefinition Width="183*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Button x:Name="snapToGridButton" Margin="10" Grid.Column="0" Command="{Binding SnapToGridCommand, Mode=OneWay}">
                 <sdk:Label Content="Snap To Grid"/>
@@ -84,6 +85,9 @@
             </Button>
             <Button x:Name="pauseOrResume" Margin="10" Grid.Column="2" Command="{Binding PauseOrResumeCommand, Mode=OneWay}" IsEnabled="{Binding CanPauseOrResume}">
                 <sdk:Label Content="{Binding PauseOrResumeText, Mode=TwoWay}"/>
+            </Button>
+            <Button x:Name="changeColorButton" Margin="10" Grid.Column="3" Command="{Binding ChangeBackgroundCommand, Mode=OneWay}">
+                <sdk:Label Content="Change Background Color"/>
             </Button>
 
             <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch">

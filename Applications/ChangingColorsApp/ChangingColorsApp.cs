@@ -3,7 +3,7 @@ using Sifteo;
 
 namespace ChangingColorsApp
 {
-  public class ChangingColorsApp : BaseApp
+  public class ChangingColorsApp :BaseApp 
   {
       private Sound _fourSound;
 
